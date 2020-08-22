@@ -154,11 +154,7 @@ global.document = {
   }
 };
 
-// modify from https://github.com/mozilla/pdf.js/blob/master/examples/node/pdf2svg.js
-pdf_table_extractor_progress = function(result){
-};
-
-pdfTableExtractorParse = function(doc) {
+pdfTableExtractorParse = function(doc, options) {
   var numPages = doc.numPages;
   var result = {};
   result.pageTables = [];
@@ -255,6 +251,11 @@ pdfTableExtractorParse = function(doc) {
                       showed[fn] = REVOPS[fn];
                   } else {
                   }
+              }
+
+              if (options.maxEdgesPerPage && edges.length > options.maxEdgesPerPage) {
+                // return no table
+                return {};
               }
 
               edges = edges.map(function(edge){
@@ -618,8 +619,8 @@ pdfTableExtractorParse = function(doc) {
                     });
                 }
                 result.currentPages ++;
-                if ('function' === typeof(pdf_table_extractor_progress)) {
-                    pdf_table_extractor_progress(result);
+                if (options.progressFunc && 'function' === typeof(options.progressFunc)) {
+                    options.progressFunc(result);
                 }
           });
       });
@@ -634,9 +635,9 @@ pdfTableExtractorParse = function(doc) {
   });
 };
 
-pdfTableExtractor = function (pdfPath) {
+pdfTableExtractor = function(pdfPath, options={}) {
     const data = new Uint8Array(fs.readFileSync(pdfPath));
-    return PDFJS.getDocument(data).then(pdfTableExtractorParse);
+    return PDFJS.getDocument(data).then((doc) => pdfTableExtractorParse(doc, options));
 };
 
 if((typeof module) !== 'undefined') {
