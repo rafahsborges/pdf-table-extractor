@@ -634,9 +634,9 @@ pdfTableExtractorParse = function(doc) {
   });
 };
 
-pdfTableExtractor = function (pdfPath, success, error){
+pdfTableExtractor = function (pdfPath) {
     const data = new Uint8Array(fs.readFileSync(pdfPath));
-    return PDFJS.getDocument(data).then(pdfTableExtractorParse).then(success, error);
+    return PDFJS.getDocument(data).then(pdfTableExtractorParse);
 };
 
 if((typeof module) !== 'undefined') {
