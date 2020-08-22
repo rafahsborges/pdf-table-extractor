@@ -1,10 +1,10 @@
-
-
 var fs = require('fs');
-Image = function(){ };
 
-
-
+// import pdfjs
+PDFJS = require('pdfjs-dist/build/pdf.js');
+PDFJS.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
+PDFJS.cMapUrl = 'pdfjs-dist/cmaps/';
+PDFJS.cMapPacked = true;
 
 // HACK few hacks to let PDF.js be loaded not as a module in global space.
 function xmlEncode(s){
@@ -154,23 +154,11 @@ global.document = {
   }
 };
 
-
-// Run `gulp dist` to generate 'pdfjs-dist' npm package files.
-PDFJS = require('pdfjs-dist/build/pdf.js');
-var module_path = __dirname.substring(0, __dirname.lastIndexOf("/")); 
-//PDFJS.workerSrc = module_path + '/pdfjs-dist/build/pdf.worker.js';
-//PDFJS.cMapUrl = module_path + '/pdfjs-dist/cmaps/';
-PDFJS.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
-PDFJS.cMapUrl = 'pdfjs-dist/cmaps/';
-PDFJS.cMapPacked = true;
-
-
-
 // modify from https://github.com/mozilla/pdf.js/blob/master/examples/node/pdf2svg.js
 pdf_table_extractor_progress = function(result){
 };
 
-pdf_table_extractor = function(doc){
+pdfTableExtractorParse = function(doc) {
   var numPages = doc.numPages;
   var result = {};
   result.pageTables = [];
@@ -646,26 +634,11 @@ pdf_table_extractor = function(doc){
   });
 };
 
-
-
-
-
-pdf_table_extractor_run = function (pdfPath,success,error){
-
-    var data = new Uint8Array(fs.readFileSync(pdfPath));
-
-// Will be using promises to load document, pages and misc data instead of
-// callback.
-PDFJS.getDocument(data).then(pdf_table_extractor).then(success,error);
-
-
+pdfTableExtractor = function (pdfPath, success, error){
+    const data = new Uint8Array(fs.readFileSync(pdfPath));
+    return PDFJS.getDocument(data).then(pdfTableExtractorParse).then(success, error);
 };
 
-
-
-
-
-
 if((typeof module) !== 'undefined') {
-    module.exports = pdf_table_extractor_run;
+    module.exports = pdfTableExtractor;
 }
