@@ -462,13 +462,16 @@ pdfTableExtractorParse = function(doc, options) {
                   var merged = false;
                   for (var r_c in verticle_merges) {
                       var m = verticle_merges[r_c];
-                      var final_id = [m.row + m.height - 1, m.col + m.width - 1].join('-');
-                      if ('undefined' !== typeof(verticle_merges[final_id])) {
-                          verticle_merges[r_c].height += verticle_merges[final_id].height - 1;
-                          delete(verticle_merges[final_id]);
+                      var curr_final_id = `${m.row + m.height - 1}-${m.col + m.width - 1}`;
+                      while (undefined !== verticle_merges[curr_final_id]) {
+                          m.height += verticle_merges[curr_final_id].height - 1;
+                          delete(verticle_merges[curr_final_id]);
                           merged = true;
-                          break;
+                          curr_final_id = `${m.row + m.height - 1}-${m.col + m.width - 1}`;
                       }
+
+                      if (merged)
+                          break;
                   }
                   if (!merged) {
                       break;
@@ -518,13 +521,16 @@ pdfTableExtractorParse = function(doc, options) {
                   var merged = false;
                   for (var r_c in horizon_merges) {
                       var m = horizon_merges[r_c];
-                      var final_id = [m.row + m.height - 1, m.col + m.width - 1].join('-');
-                      if ('undefined' !== typeof(horizon_merges[final_id])) {
-                          horizon_merges[r_c].width += horizon_merges[final_id].width - 1;
-                          delete(horizon_merges[final_id]);
+                      var curr_final_id = `${m.row + m.height - 1}-${m.col + m.width - 1}`;
+                      while (undefined !== horizon_merges[curr_final_id]) {
+                          m.width += horizon_merges[curr_final_id].width - 1;
+                          delete(horizon_merges[curr_final_id]);
                           merged = true;
-                          break;
+                          curr_final_id = `${m.row + m.height - 1}-${m.col + m.width - 1}`;
                       }
+
+                      if (merged)
+                          break;
                   }
                   if (!merged) {
                       break;
