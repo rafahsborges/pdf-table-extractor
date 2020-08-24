@@ -1,5 +1,7 @@
 var fs = require('fs');
 
+Image = function(){ };
+
 // import pdfjs
 PDFJS = require('pdfjs-dist/build/pdf.js');
 PDFJS.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
