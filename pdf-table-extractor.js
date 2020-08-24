@@ -205,6 +205,8 @@ pdfTableExtractorParse = function(doc, options) {
               var edges = [];
               var line_max_width = 2;
 
+              const maxEdgesPerPage = options.maxEdgesPerPage || Number.MAX_VALUE;
+
               while (opList.fnArray.length) {
                   var fn = opList.fnArray.shift();
                   var args = opList.argsArray.shift();
@@ -218,6 +220,11 @@ pdfTableExtractorParse = function(doc, options) {
                               height = args[1].shift();
                               if (Math.min(width, height) < line_max_width) {
                                   edges.push({y:y, x:x, width:width, height:height, transform: transformMatrix});
+
+                                  if (edges.length > maxEdgesPerPage) {
+                                      // return no table
+                                      return {};
+                                  }
                               }
                           } else if (op == PDFJS.OPS.moveTo) {
                               current_x = args[1].shift();
@@ -232,6 +239,11 @@ pdfTableExtractorParse = function(doc, options) {
                               }
                               current_x = x;
                               current_y = y;
+
+                              if (edges.length > maxEdgesPerPage) {
+                                  // return no table
+                                  return {};
+                              }
                           } else {
                               // throw ('constructPath ' + op);
                           }
@@ -253,11 +265,6 @@ pdfTableExtractorParse = function(doc, options) {
                       showed[fn] = REVOPS[fn];
                   } else {
                   }
-              }
-
-              if (options.maxEdgesPerPage && edges.length > options.maxEdgesPerPage) {
-                // return no table
-                return {};
               }
 
               edges = edges.map(function(edge){
