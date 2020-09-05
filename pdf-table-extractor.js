@@ -92,9 +92,9 @@ DOMElement.prototype = {
   },
 
   appendChild: function DOMElement_appendChild(element) {
-    var childNodes = this.childNodes;
-    if (childNodes.indexOf(element) === -1) {
-      childNodes.push(element);
+    if (this.childNodes.indexOf(element) === -1) {
+      this.childNodes.push(element);
+      element.parentNode = this;
     }
   },
 
@@ -125,6 +125,20 @@ DOMElement.prototype = {
     newNode.attributes = this.attributes;
     newNode.textContent = this.textContent;
     return newNode;
+  },
+
+  remove: function DOMElement_remove() {
+    if (this.parentNode) {
+      return this.parentNode.removeChild(this);
+    }
+  },
+
+  removeChild: function DOMElement_removeChild(element) {
+    const index = this.childNodes.indexOf(element);
+
+    if (index > -1) {
+      this.childNodes = this.childNodes.splice(index, 1);
+    }
   },
 }
 
@@ -652,7 +666,15 @@ pdfTableExtractorParse = function(doc, options) {
 
 pdfTableExtractor = function(pdfPath, options={}) {
     const data = new Uint8Array(fs.readFileSync(pdfPath));
-    return PDFJS.getDocument(data).then((doc) => pdfTableExtractorParse(doc, options));
+    const pdfLoadingTask = PDFJS.getDocument(data);
+
+    // destroy the PDFDocumentLoadingTask before returning the result
+    // to release memory which is otherwise not released
+    return pdfLoadingTask.promise
+        .then((doc) => pdfTableExtractorParse(doc, options))
+        .then((tables) => pdfLoadingTask.destroy()
+            .then(() => tables)
+        );
 };
 
 if((typeof module) !== 'undefined') {
