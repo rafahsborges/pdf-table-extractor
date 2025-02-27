@@ -666,7 +666,10 @@ pdfTableExtractorParse = function(doc, options) {
 
 pdfTableExtractor = function(pdfPath, options={}) {
     const data = new Uint8Array(fs.readFileSync(pdfPath));
-    const pdfLoadingTask = PDFJS.getDocument(data);
+    const pdfLoadingTask = PDFJS.getDocument({
+        data: data,
+        standardFontDataUrl: './node_modules/pdfjs-dist/standard_fonts/',
+    });
 
     // destroy the PDFDocumentLoadingTask before returning the result
     // to release memory which is otherwise not released
