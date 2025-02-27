@@ -7,14 +7,14 @@ This package is based on [ronnywang's pdf-table-extractor](https://github.com/ro
 ## Install
 
 ```bash
-$ npm install --save @florpor/pdf-table-extractor
+$ npm install --save @rafahsborges/pdf-table-extractor
 ```
 
 ## API
 
 ### method: pdfTableExtractor
 ```js
-const pdfTableExtractor = require('@florpor/pdf-table-extractor');
+const pdfTableExtractor = require('@rafahsborges/pdf-table-extractor');
 
 pdfTableExtractor('my_file.pdf').then(res => {
     console.log(JSON.stringify(res));
