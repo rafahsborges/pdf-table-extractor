@@ -33,8 +33,11 @@ pdfTableExtractor('my_file.pdf').then(res => {
 To use the simple CLI clone this repo and run:
 
 ```bash
+
 $ npm install
-$ node parse-cmd.js samples/pta_10229_131308_94274.pdf
+$ node parse-cmd.js samples/bs1.pdf
+or
+$ node parse-cmd.js samples/bs2.pdf
 ```
 
 ## License
